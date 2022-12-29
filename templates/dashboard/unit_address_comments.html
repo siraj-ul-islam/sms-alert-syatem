@@ -1,0 +1,286 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_header %}
+{% endblock %}
+
+{% block table %}
+<div class="card mb-4">
+    <div class="card-header">
+        <div class="card-heading">Unit Name with Car Fault List</div>
+    </div>
+    <div class="card-body text-muted">
+     <div class="input-group rounded" style="width: 26%;float: right;margin-bottom: 1%;">
+    {% if query %}
+  <input type="search" class="form-control rounded" id="search_name_address_comment" placeholder="Search" aria-label="Search" value="{{ query }}"  aria-describedby="search-addon" />
+    {% else %}
+          <input type="search" class="form-control rounded" id="search_name_address_comment" placeholder="Search" aria-label="Search"  aria-describedby="search-addon" />
+
+    {% endif %}
+  <span class="input-group-text border-0" id="search-addon">
+    <i class="fas fa-search"></i>
+  </span>
+</div>
+<div style="display: none" class='loader' id="loader_id"> </div>
+
+        <table class="table" id="datatable1">
+            <thead>
+            <tr>
+                <th>Unit Name</th>
+                <th>Fault</th>
+                <th>BA No</th>
+                <th>Vehicle Make Type</th>
+                <th>Driver Name</th>
+                <th>Remark</th>
+                <th>Date Time</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if units_details_comment %}
+            {% for unit_detail_address in units_details_comment %}
+            <tr id="row-{{unit_detail_address.id}}">
+                <td id="unit_name-{{unit_detail_address.id}}">{{unit_detail_address.unit_address_details_id}}</td>
+                <td style="max-width: 200px;" id="unit_problem-{{unit_detail_address.id}}">{{unit_detail_address.problem}}</td>
+                <td id="vehicle_no-{{unit_detail_address.id}}">{{unit_detail_address.vehicle_no}}</td>
+                <td id="make_type-{{unit_detail_address.id}}">{{unit_detail_address.car_type}}</td>
+                <td id="driver_name-{{unit_detail_address.id}}">{{unit_detail_address.driver_name}}</td>
+                 <td style="max-width: 200px;"  id="remark-{{unit_detail_address.id}}">{{unit_detail_address.remarks}}</td>
+                <td>{{unit_detail_address.created_at}}</td>
+                <td>
+                    <ul class="action-list d-flex ">
+                        <li><a class="link text-lg  text-danger p-1" data="{{unit_detail_address.id}}"
+                               data-target="#deleteModalCenterUnitDetailsAddressComment" data-toggle="modal" href="javascript:void(0);"
+                               onclick="deleteFunUnitDetailsAddressComment({{unit_detail_address.id}})"
+                               title="Delete Unit Address"><i
+                                class="far fa-trash-alt"></i></a></li>
+                        <li><a class="link text-lg  text-success p-1 mx-2 edit-project" data="{{unit_detail_address.id}}"
+                               data-target="#editModalCenterUnitDetailsAddressComment" data-toggle="modal"
+                               href="javascript:void(0);"
+                               onclick="editFunctionUnitDetailsAddressComment({{unit_detail_address.id}})" title="Edit Unit Address"><i
+                                class="far fa-edit"></i></a></li>
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+                            {% include "dashboard/pagination.html" with page=units_details_comment%}
+
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+{% block delete_modal %}
+<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="deleteModalCenterUnitDetailsAddressComment"
+     role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLongTitle">Delete Vehicle Details</h5>
+                <button aria-label="Close" class="btn-close" data-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <p> Are You Sure to delete this Unit Vehicle Details ?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="deleteRecord" onclick="confirmDeleteUnitDetailsAddressComment()"
+                        type="button" value="true">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block edit_form %}
+<!-- Modal edit campaign-->
+<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="editModalCenterUnitDetailsAddressComment" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="card-heading">Edit Unit Vehicle Details</h4>
+                <button aria-label="Close" class="btn-close" data-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <form action="javascript:void(0);">
+                    <div class="row">
+
+                                   <label class="form-label mt-3">Select Unit Name</label>
+                                    <select class="choices-1 form-control" id="unitNameSelectAddress" name="unit_name">
+                                        <option>Select Unit Name</option>
+                                    </select>
+
+                                <label class="form-label mt-3">Fault</label>
+                                <textarea class="form-control" name="unit_problem"  id="unit_problem" rows="3" placeholder="Enter unit car Problem"
+                                          type="text"></textarea>
+
+                                <label class="form-label mt-3">Driver Name</label>
+                                <input class="form-control" name="driver_name" id="driver_name" placeholder="Enter Person  No"
+                                       type="text">
+
+                                <label class="form-label mt-3">BA No</label>
+                                <input class="form-control" name="vehicle_no" id="vehicle_no" placeholder="Enter Unit Car No"
+                                       type="text">
+
+                                <label class="form-label mt-3">Vehicle Type Make</label>
+                                <input class="form-control" name="make_type" id="make_type" placeholder="Enter Vehicle Type"
+                                       type="text">
+
+                                <label class="form-label mt-3">Remarks</label>
+                                <textarea class="form-control" name="remark" id="remark" rows="3" placeholder="Enter Remarks"
+                                          type="text"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="saveRecord" onclick="confirmUpdateUnitDetailsAddress()"
+                        type="button">Save changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block success_notification %}
+{% if messages %}
+<div aria-atomic="true" aria-live="assertive" class="toast show" id="liveToast" role="alert">
+    <div class="toast-header"><span class="dot bg-success me-2"></span>
+        <div class="card-heading text-dark me-auto">SMS-Alert-Dashboard</div>
+        <small>2 sec ago</small>
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="toast"
+                type="button"></button>
+    </div>
+    {% for message in messages %}
+    <div class="toast-body text-muted">{{ message }}
+
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+
+
+{% block java-script %}
+{% load static %}
+<script>
+
+    // delete and update unit name and address
+function deleteFunUnitDetailsAddressComment(dataId){
+        data_id=dataId
+    }
+function confirmDeleteUnitDetailsAddressComment(){
+    console.log("confirm",data_id)
+    $.ajax({
+       url: '/dashboard/delete-unitname-address-comment/',
+       data:{
+            'data-id':data_id,
+       },
+      type:"GET",
+      success: function(response, xhr){
+            $("#row-"+ data_id).remove();
+            window.location.href = window.location.href;
+      }
+    });
+}
+
+
+
+
+function editFunctionUnitDetailsAddressComment(data){
+    data_id=data
+    var unit_name=document.getElementById("unit_name-"+data+"")
+    var unit_Name = unit_name.innerText
+
+    var unit_problem=document.getElementById("unit_problem-"+data+"")
+    var unit_Problem = unit_problem.innerText
+    document.getElementById("unit_problem").value = unit_Problem
+
+    var vehicle_no=document.getElementById("vehicle_no-"+data+"")
+    var vehicle_No = vehicle_no.innerText
+    document.getElementById("vehicle_no").value = vehicle_No
+
+    var driver_name=document.getElementById("driver_name-"+data+"")
+    var driver_Name = driver_name.innerText
+    document.getElementById("driver_name").value = driver_Name
+
+    var make_type=document.getElementById("make_type-"+data+"")
+    var make_Type = make_type.innerText
+    document.getElementById("make_type").value = make_Type
+
+    var remark=document.getElementById("remark-"+data+"")
+    var Remark = remark.innerText
+    document.getElementById("remark").value = Remark
+
+    console.log(unit_Name)
+    get_all_units_name_address(data_id, unit_Name)
+
+}
+function confirmUpdateUnitDetailsAddress() {
+    UnitName = document.getElementById("unitNameSelectAddress").value
+    unit_problem = document.getElementById("unit_problem").value
+    vehicle_no = document.getElementById("vehicle_no").value
+    driver_name = document.getElementById("driver_name").value
+    make_type = document.getElementById("make_type").value
+    remark = document.getElementById("remark").value
+    console.log(UnitName);
+    $.ajax({
+        url: '/dashboard/update-unitname-address-comment/',
+        data: {
+            'data-id': data_id,
+            'unit_name': UnitName,
+            'unit_problem':unit_problem,
+            'vehicle_no': vehicle_no,
+            'driver_name': driver_name,
+            'remark':remark,
+            'make_type':make_type,
+        },
+        type: "GET",
+        success: function (response, xhr) {
+            $("#unit_name-" + data_id).text(UnitName);
+            $("#unit_problem-" + data_id).text(unit_problem);
+            window.location.href = window.location.href;
+        }
+    });
+}
+</script>
+    <script>
+$(document).ready(function(){
+    $("#search_name_address_comment").keypress(function(event){
+        if(event.key === "Enter"){
+
+            $("#loader_id").css({display: "block"});
+        var query = $('#search_name_address_comment').val();
+        $("#search_name_address_comment").css("background-color", "#F8F8F8");
+                $.ajax({
+       url: '/dashboard/list-unitname-address-comment/',
+       data:{
+            'query':query,
+       },
+      type:"GET",
+      success: function(response, xhr){
+          let url_check= window.location.href
+          if (url_check.includes('query')){
+              url_check = url_check.split('?query')[0]
+              window.location.href = url_check + '?query=' + query;
+          }else {
+              window.location.href = window.location.href + '?query=' + query;
+          }
+      }
+    });
+        }
+
+
+    });
+});
+</script>
+{% endblock %}

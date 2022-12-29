@@ -1,0 +1,25 @@
+<nav aria-label="page navigation example" style="float: right;">
+    <ul class="pagination">
+        <li class="page-item">
+            {% if page.has_previous %}
+            <a class="page-link loader_pagination_add" href="?query={{query}}&page={{page.previous_page_number}}">Previous</a>
+            {% endif %}
+        </li>
+                <li class="page-item">
+            <a class="page-link" >Page {{page.number}} of {{page.paginator.num_pages}}</a>
+
+        </li>
+                <li class="page-item">
+            {% if page.has_next %}
+            <a class="page-link loader_pagination_add" href="?query={{query}}&page={{page.next_page_number}}">Next</a>
+            {% endif %}
+        </li>
+    </ul>
+
+</nav>
+<script>
+    var element = document.getElementsByClassName('loader_pagination_add')
+    $(element).on('click', function () {
+        $("#loader_id").css({display: "block"});
+    });
+</script>

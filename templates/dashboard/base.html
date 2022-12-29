@@ -1,0 +1,457 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <title>{% block title %} SMS Alert System {% endblock %}</title>
+    <meta content="" name="description">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="all,follow" name="robots">
+    <!-- FontAwesome CSS - loading as last, so it doesn't block rendering-->
+
+    <link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" rel="stylesheet">
+    <!-- Google fonts - Popppins for copy-->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&amp;display=swap"
+          rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {% block stylesheet %}
+    <!-- VanillaJs Datepicker CSS-->
+    <link type="text/html" href="% static 'vendor/vanillajs-datepicker/css/datepicker-bs4.min.css' %}" rel="stylesheet">
+                        <link href="{% static 'css/page_loader.css' %}" rel="stylesheet">
+
+    <!-- Prism Syntax Highlighting-->
+    <link href="{% static 'vendor/prismjs/plugins/toolbar/prism-toolbar.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/prismjs/themes/prism-okaidia.css' %}" rel="stylesheet">
+    <!-- The Main Theme stylesheet (Contains also Bootstrap CSS)-->
+    <link href="{% static 'css/style.default.css' %}" id="theme-stylesheet" rel="stylesheet">
+    <!-- Custom stylesheet - for your changes-->
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'dashboard/css/custom-dashboard.css' %}" rel="stylesheet">
+    <style>
+    .dataTable-bottom {
+        display: none;
+    }
+    .dataTable-top{
+        display: none;
+    }
+    .dataTable-loading{
+        float: left;
+        width: 100%;
+    }
+    </style>
+    {% endblock %}
+</head>
+<body>
+<!-- navbar-->
+<header class="header">
+    <nav class="navbar navbar-expand-lg px-4 py-2 bg-white shadow"><a
+            class="sidebar-toggler text-gray-500 me-4 me-lg-5 lead" href="#"><i class="fas fa-align-left"></i></a><a
+            class="navbar-brand fw-bold text-uppercase text-base" href="/dashboard/main"><span
+            class="d-none d-brand-partial">SMS Alert </span><span class="d-none d-sm-inline">Dashboard</span></a>
+        <ul class="ms-auto d-flex align-items-center list-unstyled mb-0">
+
+            <li class="nav-item dropdown ms-auto"><a aria-expanded="false" aria-haspopup="true" class="nav-link pe-0"
+                                                     data-bs-toggle="dropdown" href="#"
+                                                     id="userInfo"><img alt="Jason Doe"
+                                                                        class="avatar p-1"
+                                                                        src="{% static 'icons/user-icon.png' %}"></a>
+                <div aria-labelledby="userInfo" class="dropdown-menu dropdown-menu-end dropdown-menu-animated">
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'logout_user' %}">Logout</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+</header>
+<div class="d-flex align-items-stretch">
+    <div class="sidebar py-3" id="sidebar">
+        <h6 class="sidebar-heading"></h6>
+        <ul class="list-unstyled">
+            <li class="sidebar-list-item"><a class="sidebar-link text-muted active" href="/dashboard/main/">
+                <svg class="svg-icon svg-icon-md me-3">
+                    <use xlink:href="/static/icons/orion-svg-sprite.svg#real-estate-1"></use>
+                </svg>
+                <span class="sidebar-link-title">Dashboard</span></a></li>
+        </ul>
+        <ul class="list-unstyled">
+
+            {% if request.user.is_superuser %}
+            <li class="sidebar-list-item"><a class="sidebar-link text-muted" href="/dashboard/list-unitname/">
+                <svg class="svg-icon svg-icon-md me-3">
+                    <use xlink:href="/static/icons/orion-svg-sprite.svg#reading-1"></use>
+                </svg>
+                <span class="sidebar-link-title">Unit Names</span></a></li>
+            {% endif %}
+
+            {% if request.user.is_superuser %}
+            <li class="sidebar-list-item"><a class="sidebar-link text-muted" href="/dashboard/list-unitname-address/">
+                <svg class="svg-icon svg-icon-md me-3">
+                    <use xlink:href="/static/icons/orion-svg-sprite.svg#angle-brackets-1"></use>
+                </svg>
+                <span class="sidebar-link-title">Unit Details</span></a></li>
+            {% endif %}
+
+            <li class="sidebar-list-item"><a class="sidebar-link text-muted" href="/dashboard/list-unitname-address-comment/">
+                <svg class="svg-icon svg-icon-md me-3">
+                    <use xlink:href="/static/icons/orion-svg-sprite.svg#angle-brackets-1"></use>
+                </svg>
+                <span class="sidebar-link-title">Unit Vehicle Details</span></a></li>
+
+            {% if request.user.is_superuser %}
+            <li class="sidebar-list-item"><a class="sidebar-link text-muted" href="/signup/#">
+                <svg class="svg-icon svg-icon-md me-3">
+                    <use xlink:href="/static/icons/orion-svg-sprite.svg#new-1"></use>
+                </svg>
+                <span class="sidebar-link-title">User Create</span></a></li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="page-holder bg-gray-100">
+        <div class="container-fluid px-lg-4 px-xl-5">
+            <!-- Breadcrumbs -->
+            <!-- Page Header-->
+            <div class="page-header"></div>
+            <div class="page-header d-flex justify-content-between align-items-center">
+
+                {% if request.user.is_superuser %}
+                <div class="create-btn">
+    <a class="badge rounded-pill me-2 p-3 badge-primary-light" data-target="#createUnitModalCenterCreateUnitName"
+       data-toggle="modal"
+       href="javascript:void(0);">
+        <i class="fa fa-plus me-2"> </i>Add New Unit</a>
+</div>
+                {% endif %}
+
+                {% if request.user.is_superuser %}
+<div class="create-btn">
+    <a class="badge rounded-pill me-2 p-3 badge-primary-light" data-target="#createUnitModalCenterCreateUnitNameAddress"
+       data-toggle="modal"
+       href="javascript:void(0);" onclick="get_all_units_name()">
+        <i class="fa fa-plus me-2"> </i>Add New Unit Detail</a>
+</div>
+                {% endif %}
+
+
+<div class="create-btn">
+    <a class="badge rounded-pill me-2 p-3 badge-primary-light" data-target="#createUnitModalCenterCreateUnitNameAddressComment"
+       data-toggle="modal"
+       href="javascript:void(0);" onclick="get_all_units_name_comment()">
+        <i class="fa fa-plus me-2"> </i>Add New Vehicle Details</a>
+</div>
+                {% block page_header %} {% endblock %}
+
+            </div>
+
+
+
+            {% block content %}{% endblock %}
+            {% block table %}{% endblock %}
+
+        </div>
+        {% block create_modal %}{% endblock %}
+        <!-- Modal Create unit Name -->
+        <div aria-hidden="true" aria-labelledby="createUnitModalCenterCreateUnitName" class="modal fade text-start"
+             id="createUnitModalCenterCreateUnitName"
+             role="dialog" tabindex="-1" width="20vw">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header border-0 bg-gray-100">
+                        <h3 class="h5 text-uppercase modal-title" id="exampleModalLabel">Add New Unit Name</h3>
+                        <button aria-label="Close" class="btn-close" data-dismiss="modal"
+                                type="button"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form action="/dashboard/create-unitname/" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label>Unit Name</label>
+                                <input class="form-control" name="unit_name" placeholder="Enter unit Name"
+                                       type="text">
+                                </div>
+
+                    </div>
+                    <div class="modal-footer border-0 bg-gray-100">
+                        <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                        <button class="btn btn-primary" type="submit">Save changes</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+                <!-- Modal Create unit Name Address -->
+        <div aria-hidden="true" aria-labelledby="createUnitModalCenterCreateUnitNameAddress" class="modal fade text-start"
+             id="createUnitModalCenterCreateUnitNameAddress"
+             role="dialog" tabindex="-1" width="20vw">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header border-0 bg-gray-100">
+                        <h3 class="h5 text-uppercase modal-title">Add Unit Details</h3>
+                        <button aria-label="Close" class="btn-close" data-dismiss="modal"
+                                type="button"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form action="/dashboard/create-unitname-address/" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+
+                               <label class="form-label mt-3">Select Unit Name</label>
+                                    <select class="choices-1 form-control" id="unitNameSelect" name="unit_name">
+                                        <option>Select Unit Name</option>
+                                    </select>
+
+                                <label class="form-label mt-3">Unit Address</label>
+                                <input class="form-control" name="unit_address" placeholder="Enter unit Address"
+                                       type="text">
+
+                                <label class="form-label mt-3">Unit Phone No</label>
+                                <input class="form-control" name="unit_person_no" placeholder="Enter Person Phone No"
+                                       type="text">
+
+                                <label class="form-label mt-3">Unit Authorize Person Name</label>
+                                <input class="form-control" name="person_name" placeholder="Enter Unit Person Name"
+                                       type="text">
+                                <label class="form-label mt-3" for="status">Choose a Status:</label>
+
+                                        <select class="form-control" name="status" id="status">
+                                          <option value="True">True</option>
+                                          <option value="False">False</option>
+
+                                        </select>
+
+                                </div>
+
+                    </div>
+                    <div class="modal-footer border-0 bg-gray-100">
+                        <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                        <button class="btn btn-primary" type="submit">Save changes</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+                <!-- Modal Create unit Name Address comment-->
+        <div aria-hidden="true" aria-labelledby="createUnitModalCenterCreateUnitNameAddressComment" class="modal fade text-start"
+             id="createUnitModalCenterCreateUnitNameAddressComment"
+             role="dialog" tabindex="-1" width="20vw">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header border-0 bg-gray-100">
+                        <h3 class="h5 text-uppercase modal-title">Add New Vehicle Details </h3>
+                        <button aria-label="Close" class="btn-close" data-dismiss="modal"
+                                type="button"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form action="/dashboard/create-unitname-address-comment/" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+
+                               <label class="form-label mt-3">Select Unit Name</label>
+                                    <select class="choices-1 form-control" id="unitNameSelectComment" name="unit_name">
+                                        <option>Select Unit Name</option>
+                                    </select>
+
+                                <label class="form-label mt-3">Fault</label>
+                                <textarea class="form-control" name="unit_problem" rows="3" placeholder="Enter Car Problem"
+                                          type="text"></textarea>
+
+                                <label class="form-label mt-3">Driver Name</label>
+                                <input class="form-control" name="driver_name" placeholder="Enter Person  No"
+                                       type="text">
+
+                                <label class="form-label mt-3">BA No</label>
+                                <input class="form-control" name="vehicle_no" placeholder="Enter Unit Car No"
+                                       type="text">
+
+                                <label class="form-label mt-3">Vehicle Type Make</label>
+                                <input class="form-control" name="vehicle_type_make" placeholder="Enter Vehicle Type"
+                                       type="text">
+
+                                <label class="form-label mt-3">Remarks</label>
+                                <textarea class="form-control" name="unit_remarks" rows="3" placeholder="Enter Remarks"
+                                          type="text"></textarea>
+
+                                </div>
+
+                    </div>
+                    <div class="modal-footer border-0 bg-gray-100">
+                        <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                        <button class="btn btn-primary" type="submit">Save changes</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal start camp-->
+        {% block start_campaign_modal %}{% endblock %}
+        <!-- Modal stop camp-->
+        {% block stop_campaign_modal %}{% endblock %}
+        <!-- Modal Delete-->
+        {% block delete_modal %}{% endblock %}
+        <!-- Modal pause-->
+        {% block pause_camp_modal %}{% endblock %}
+
+        {% block edit_form %} {% endblock %}
+
+        </section>
+        <div class="toast-container position-fixed z-index-50 top-0 end-0 p-3" id="toast">
+            {% block success_notification %}{% endblock %}
+            {% block error_notification %} {% endblock %}
+            {% block info_notification %} {% endblock %}
+        </div>
+        <footer class="footer bg-white shadow align-self-end py-3 px-xl-5 w-100">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start fw-light">
+                        <p class="mb-2 mb-md-0 fw-light">SMS-Alert-Dashboard &copy; 2022</p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end text-gray-400">
+                        <p class="mb-0">Version 1.1.0</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+{{ user_id|json_script:"json-user_name" }}
+{% block scripts %}
+<script>
+
+
+    try {
+    setTimeout(() => {
+        const box = document.getElementById('liveToast');
+        try {
+            box.remove();
+        } catch (e) {
+        }
+    }, 2000);
+} catch (e) {
+    console.clear()
+}
+
+
+        function get_all_units_name(){
+    $.ajax({
+       url: '/dashboard/get-unit-names/',
+       data:{
+            // 'project-id':projectId,
+       },
+      type:"GET",
+      success: function(response, xhr){
+            const data = JSON.parse(response);
+            size = data.length
+            $("#unitNameSelect").empty();
+            $("#unitNameSelect").prepend(`<option>Select Unit Name</option>`)
+
+            for(var i=0;i<size;i++){
+                $("#unitNameSelect").append('<option value='+ data[i]['pk'] +'>' +data[i]['fields']['unit_name']+ '</option>');
+            }
+      },
+      error:function(response, xhr){
+            $("#unitNameSelect").prepend(`<option>Select Unit Name</option>`)
+      }
+    })
+ }
+ function get_all_units_name_comment(){
+    $.ajax({
+       url: '/dashboard/get-unit-names/',
+       data:{
+            // 'project-id':projectId,
+       },
+      type:"GET",
+      success: function(response, xhr){
+            const data = JSON.parse(response);
+            size = data.length
+            $("#unitNameSelectComment").empty();
+            $("#unitNameSelectComment").prepend(`<option>Select Unit Name</option>`)
+
+            for(var i=0;i<size;i++){
+                $("#unitNameSelectComment").append('<option value='+ data[i]['pk'] +'>' +data[i]['fields']['unit_name']+ '</option>');
+            }
+      },
+      error:function(response, xhr){
+            $("#unitNameSelectComment").prepend(`<option>Select Unit Name</option>`)
+      }
+    })
+ }
+
+        function get_all_units_name_address(id, unit_Name){
+
+    $.ajax({
+       url: '/dashboard/get-unit-names/',
+       data:{
+            // 'address_id':id,
+       },
+      type:"GET",
+      success: function(response, xhr){
+            const data = JSON.parse(response);
+            size = data.length
+            $("#unitNameSelectAddress").empty();
+            for(var j=0;j<size;j++) {
+                if (data[j]['fields']['unit_name'] == unit_Name) {
+                    $("#unitNameSelectAddress").prepend('<option value=' + data[j]['pk'] +'>' + data[j]['fields']['unit_name'] + '</option>')
+                }
+            }
+            for(var i=0;i<size;i++){
+                if (data[i]['fields']['unit_name'] != unit_Name) {
+                    $("#unitNameSelectAddress").append('<option value=' + data[i]['pk'] + '>' + data[i]['fields']['unit_name'] + '</option>');
+                }
+            }
+      },
+      error:function(response, xhr){
+            $("#unitNameSelectAddress").prepend(`<option>Select Unit Name</option>`)
+      }
+    })
+ }
+
+
+
+</script>
+<!-- JavaScript files-->
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<!-- VanillaJs DatePicker-->
+<!--    <script src="{% static 'vendor/vanillajs-datepicker/js/datepicker-full.min.js' %}"></script>-->
+<!-- Choices.js-->
+<script src="{% static 'vendor/choices.js/public/assets/scripts/choices.min.js ' %}"></script>
+<!-- iMask-->
+<script src="{% static 'vendor/imask/imask.min.js' %}"></script>
+<!-- Forms init-->
+<script src="{% static 'js/forms-advanced.js' %}"></script>
+<!-- Data Tables-->
+<script src="{% static 'js/tables-datatable.js' %}"></script>
+<!-- Main Theme JS File-->
+<script src="{% static 'js/theme.js' %}"></script>
+<!-- Prism for syntax highlighting-->
+<script src="{% static 'vendor/prismjs/prism.js' %}"></script>
+<script src="{% static 'vendor/prismjs/plugins/normalize-whitespace/prism-normalize-whitespace.min.js' %}"></script>
+<script src="{% static 'vendor/prismjs/plugins/toolbar/prism-toolbar.min.js' %}"></script>
+<script src="{% static 'vendor/prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js' %}"></script>
+<!--<script src="{% static 'dashboard/js/socket.js' %}"></script>-->
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script crossorigin="anonymous"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script crossorigin="anonymous"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+<!-- block custom javascript   -->
+{% block java-script %}
+{% endblock %}
+</body>
+</html>

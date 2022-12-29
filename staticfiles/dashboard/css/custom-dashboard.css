@@ -1,0 +1,65 @@
+ul.action-list.d-flex  {
+    list-style: none;
+}
+label {
+    text-transform: capitalize;
+}
+a.link.text-lg.text-success.p-1.play {
+    border-left: 1px solid #c1c1c1;
+}a.link.text-lg.text-secondary.p-1.play {
+    border-left: 1px solid #c1c1c1;
+}
+
+@media (min-width: 576px){
+    .modal-dialog {
+        max-width: 35% !important;
+    }
+}@media (max-width: 576px){
+    .create-btn {
+    position: relative;
+    top: -20px;
+    right: 3vw;
+}
+}
+.choices__list--dropdown {
+    z-index: 9 !important;}
+
+.card-body.text-muted.flex {
+    /* display: flex; */
+    width: 40vw;
+}
+input.checkbox {
+    float: right;
+    margin: 10px 0 0 0;
+}
+.text-sm {
+    font-size: .7rem !important;
+}
+input[type=checkbox] {
+    font-size: 14px !important;
+    font-size: 36;
+    font-weight: 300;
+    width: 6mm;
+    -webkit-appearance: auto;
+    -moz-appearance: none;
+    height: 4mm;
+}
+.toast-header {
+    background-color: rgb(208 229 249 / 85%) !important;
+}
+.choices__inner {
+    background-color: #fff;
+}
+.choices__input {
+    background-color: #fff ;
+    }
+    .sk-three-bounce .sk-child {
+    width: 12px !important;
+    height: 12px !important;
+    }
+.badge {
+    font-size: 0.9em !important;
+    letter-spacing: 1px !important;
+}
+
+

@@ -1,0 +1,145 @@
+{% extends "dashboard/base.html" %}
+
+{% block page_header %}
+{% endblock %}
+
+{% block table %}
+<div class="card mb-4">
+    <div class="card-header">
+        <div class="card-heading">Problem List</div>
+    </div>
+    <div class="card-body text-muted">
+
+        <table class="table" id="datatable1">
+            <thead>
+            <tr>
+                <th>Unit Name</th>
+                <th>Vehicle No</th>
+                <th>Driver Name</th>
+                <th>Problem</th>
+                <th>Date Time</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if all_projects %}
+            {% for project in all_projects %}
+            <tr id="row-{{project.project_id}}">
+                <td><a class="text-muted"
+                       href="/dashboard/project_view/"
+                       id="project-" title="View Campaign Against this Project ">{{project.unit_address_details_id}}</a>
+                </td>
+                <td id="liveCamp-">{{project.vehicle_no}}</td>
+                <td>{{project.driver_name}}</td>
+                <td>
+                    {{project.problem}}
+                </td>
+                <td>{{project.created_at}}</td>
+
+                <td>
+                    <ul class="action-list d-flex ">
+                        <li><a class="link text-lg  text-danger p-1" data="{{project.project_id}}"
+                               data-target="#deleteModalCenter" data-toggle="modal" href="javascript:void(0);"
+                               onclick="deleteFun({{project.project_id}})"
+                               title="Delete Project"><i
+                                class="far fa-trash-alt"></i></a></li>
+                        <li><a class="link text-lg  text-success p-1 mx-2 edit-project" data="{{project.project_id}}"
+                               data-target="#editModalCenter" data-toggle="modal"
+                               href="javascript:void(0);"
+                               onclick="editFunction({{project.project_id}})" title="Edit Project"><i
+                                class="far fa-edit"></i></a></li>
+                        <li><a class="link text-lg  text-primary p-1"
+                               href="/dashboard/project_view/{{project.project_id}}/"
+                               title="View Campaign Against this Project"><i
+                                class="far fa-eye"></i></a></li>
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block delete_modal %}
+<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="deleteModalCenter"
+     role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLongTitle">Delete Comment</h5>
+                <button aria-label="Close" class="btn-close" data-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <p> Are You Sure to delete this record ?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="deleteRecord" onclick="confirmDelete()"
+                        type="button" value="true">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block edit_form %}
+<!-- Modal edit campaign-->
+<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="editModalCenter" role="dialog"
+     tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="card-heading">Edit Project</h4>
+                <button aria-label="Close" class="btn-close" data-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <form action="javascript:void(0);">
+                    <div class="row">
+                        <label class="col-md-3 form-label text-sm">Project Name</label>
+                        <div class="col-md-9">
+                            <input class="form-control" id="projectName" placeholder="project name" type="text"
+                                   value="">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="saveRecord" onclick="updateProject()"
+                        type="button">Save changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block success_notification %}
+{% if messages %}
+<div aria-atomic="true" aria-live="assertive" class="toast show" id="liveToast" role="alert">
+    <div class="toast-header"><span class="dot bg-success me-2"></span>
+        <div class="card-heading text-dark me-auto">Traffic-Dashboard</div>
+        <small>2 sec ago</small>
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="toast"
+                type="button"></button>
+    </div>
+    {% for message in messages %}
+    <div class="toast-body text-muted">{{ message }}
+
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+
+
+{% block java-script %}
+{% load static %}
+<script src="{% static 'dashboard/js/custom_main.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title%} SMS ALERT SYSTEM {% endblock %}</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    {% block stylesheet %}
+    <!-- Google fonts - Popppins for copy-->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+    <!-- Prism Syntax Highlighting-->
+    <link rel="stylesheet" href="{% static 'vendor/prismjs/plugins/toolbar/prism-toolbar.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/prismjs/themes/prism-okaidia.css' %}">
+    <!-- The Main Theme stylesheet (Contains also Bootstrap CSS)-->
+    <link rel="stylesheet" href="{% static 'css/style.default.css' %}" id="theme-stylesheet">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    {% endblock %}
+  </head>
+
+  <body>
+    <div class="page-holder align-items-center py-4 bg-gray-100 vh-100">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6 px-lg-4">
+            <div class="card">
+              <div class="card-header px-lg-5">
+
+                      <div class="card-heading text-primary">SMS Alert System</div>
+              </div>
+              {% block user_auth %} {% endblock %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+            <div class="toast-container position-fixed z-index-50  bottom-0 p-3" style=" top: -1px; right: -1px;" id="toast">
+            {% block notifications %}{% endblock %}
+{% if messages %}
+<div aria-atomic="true" aria-live="assertive" class="toast show" id="liveToast" role="alert">
+    <div class="toast-header"><span class="dot bg-success me-2"></span>
+        <div class="card-heading text-dark me-auto">SMS-Alert-Dashboard</div>
+        <small>2 sec ago</small>
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="toast"
+                type="button"></button>
+    </div>
+    {% for message in messages %}
+    <div class="toast-body text-muted">{{ message }}
+
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+        </div>
+
+    <!-- JavaScript files-->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js' %}"></script>
+    <!-- Main Theme JS File-->
+    <script src="{% static 'js/theme.js' %}"></script>
+    <!-- Prism for syntax highlighting-->
+    <script src="{% static 'vendor/prismjs/prism.js' %}"></script>
+    <script src="{% static 'vendor/prismjs/plugins/normalize-whitespace/prism-normalize-whitespace.min.js' %}"></script>
+    <script src="{% static 'vendor/prismjs/plugins/toolbar/prism-toolbar.min.js' %}"></script>
+    <script src="{% static 'vendor/prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js' %}"></script>
+    <script type="text/javascript">
+      // Optional
+      Prism.plugins.NormalizeWhitespace.setDefaults({
+      'remove-trailing': true,
+      'remove-indent': true,
+      'left-trim': true,
+      'right-trim': true,
+      });
+
+    </script>
+    {% block js %}
+    <script>
+      $("document").ready(function(){
+          $('#toast').delay(5000).fadeOut('slow');
+      })
+
+
+          try {
+    setTimeout(() => {
+        const box = document.getElementById('liveToast');
+        try {
+            box.remove();
+        } catch (e) {
+        }
+    }, 2000);
+} catch (e) {
+    console.clear()
+}
+
+    </script>
+    {% endblock %}
+    <!-- FontAwesome CSS - loading as last, so it doesn't block rendering-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  </body>
+
+</html>
