@@ -22,7 +22,7 @@ def main(request):
             units_details_comment = unit_comment_details.objects.filter(Q(vehicle_no__icontains=query)).order_by('-id')
         else:
             units_details_comment = unit_comment_details.objects.all().order_by('-id')
-        paginator = Paginator(units_details_comment, 5)
+        paginator = Paginator(units_details_comment, 10)
         page = request.GET.get('page')
         try:
             units_details_comment = paginator.page(page)
@@ -95,7 +95,7 @@ def list_unitname(request):
             units_details = unit_details.objects.filter(Q(unit_name__icontains=query)).order_by('-id')
         else:
             units_details = unit_details.objects.all().order_by('-id')
-        paginator = Paginator(units_details, 2)
+        paginator = Paginator(units_details, 10)
         page = request.GET.get('page')
         try:
             units_details = paginator.page(page)
@@ -184,7 +184,7 @@ def list_unitname_address(request):
             units_details_address = unit_address_details.objects.filter(Q(unit_address__icontains=query)).order_by('-id')
         else:
             units_details_address = unit_address_details.objects.all().order_by('-id')
-        paginator = Paginator(units_details_address, 2)
+        paginator = Paginator(units_details_address, 10)
         page = request.GET.get('page')
         try:
             units_details_address = paginator.page(page)
@@ -244,7 +244,6 @@ def create_unitname_address_comment(request):
             vehicle_type_make = request.POST['vehicle_type_make']
             unit_remarks = request.POST['unit_remarks']
 
-            print(unit_details_id)
             unit_name_value = unit_details.objects.get(id=unit_details_id)
             new_record = unit_comment_details.objects.create(user_id=current_user, unit_address_details_id = unit_name_value, problem=unit_problem, remarks=unit_remarks, car_type=vehicle_type_make, vehicle_no=vehicle_no,
                                                              driver_name=driver_name)
@@ -252,11 +251,16 @@ def create_unitname_address_comment(request):
             messages.success(request, "Comment Created Successfully")
 
             # // used for sms
+            numbers = []
+            message = 'Car No: '+ vehicle_no + '. Model : '+ vehicle_type_make + '. Driver Name : '+ driver_name + '. Problem : '+unit_problem
             unit_name_value = unit_address_details.objects.filter(unit_details_id=unit_details_id).filter(status= True)
             print(unit_name_value)
             for i in unit_name_value:
-                print(i.unit_address)
+                numbers.append(int(i.phone_number))
+            print(numbers)
+            print(message)
 
+            messages.success(request, "Masseges Send Successfully")
 
     except Exception as e:
         print("exception\t:\t", e)
@@ -276,7 +280,7 @@ def list_unitname_address_comment(request):
             units_details_comment = unit_comment_details.objects.filter(Q(vehicle_no__icontains=query)).order_by('-id')
         else:
             units_details_comment = unit_comment_details.objects.all().order_by('-id')
-        paginator = Paginator(units_details_comment, 5)
+        paginator = Paginator(units_details_comment, 10)
         page = request.GET.get('page')
         try:
             units_details_comment = paginator.page(page)
